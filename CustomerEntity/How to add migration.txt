@@ -1,0 +1,7 @@
+- Add migration:
+
+dotnet ef migrations add AddBlogCreatedTimestamp
+
+- Update db:
+
+dotnet ef database update
