@@ -1,3 +1,4 @@
+using Customers.Core;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -5,7 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("Todos") ?? "Data Source=Todos.db";
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSqlite<TodoDbContext>(connectionString);
+builder.Services.AddSqlServer<CustomerContext>(connectionString);
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new() { Title = builder.Environment.ApplicationName, Version = "v1" });
@@ -21,55 +22,55 @@ if (app.Environment.IsDevelopment())
 
 app.MapFallback(() => Results.Redirect("/swagger"));
 
-app.MapGet("/todos", async (TodoDbContext db) =>
+app.MapGet("/customers", async (CustomerContext db) =>
 {
-    return await db.Todos.ToListAsync();
+    return await db.Customers.ToListAsync();
 });
 
-app.MapGet("/todos/{id}", async (TodoDbContext db, int id) =>
+app.MapGet("/customers/{id}", async (CustomerContext db, int id) =>
 {
-    return await db.Todos.FindAsync(id) switch
+    return await db.Customers.FindAsync(id) switch
     {
-        Todo todo => Results.Ok(todo),
+        Customer customer => Results.Ok(customer),
         null => Results.NotFound()
     };
 });
 
-app.MapPost("/todos", async (TodoDbContext db, Todo todo) =>
+app.MapPost("/customers", async (CustomerContext db, Customer customer) =>
 {
-    await db.Todos.AddAsync(todo);
+    await db.Customers.AddAsync(customer);
     await db.SaveChangesAsync();
 
-    return Results.Created($"/todos/{todo.Id}", todo);
+    return Results.Created($"/customers/{customer.Id}", customer);
 });
 
-app.MapPut("/todos/{id}", async (TodoDbContext db, int id, Todo todo) =>
+app.MapPut("/customers/{id}", async (CustomerContext db, int id, Customer customer) =>
 {
-    if (id != todo.Id)
+    if (id != customer.Id)
     {
         return Results.BadRequest();
     }
 
-    if (!await db.Todos.AnyAsync(x => x.Id == id))
+    if (!await db.Customers.AnyAsync(x => x.Id == id))
     {
         return Results.NotFound();
     }
 
-    db.Update(todo);
+    db.Update(customer);
     await db.SaveChangesAsync();
 
     return Results.Ok();
 });
 
-app.MapDelete("/todos/{id}", async (TodoDbContext db, int id) =>
+app.MapDelete("/customers/{id}", async (CustomerContext db, int id) =>
 {
-    var todo = await db.Todos.FindAsync(id);
-    if (todo is null)
+    var customer = await db.Customers.FindAsync(id);
+    if (customer is null)
     {
         return Results.NotFound();
     }
 
-    db.Todos.Remove(todo);
+    db.Customers.Remove(customer);
     await db.SaveChangesAsync();
 
     return Results.Ok();
