@@ -24,15 +24,10 @@ namespace Customers.Core
         public string SystemName { get; set; }
         public DateTime CreatedOnUtc { get; set; }
         public DateTime? LastLoginDateUtc { get; set; }
-        public DateTime LastActivityDateUtc { get; set; }
-        public string Title { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string FullName { get; set; }
-        public string Company { get; set; }
         public string CustomerNumber { get; set; }
-        public DateTime? BirthDate { get; set; }
-        public string Gender { get; set; }
 
         public virtual ICollection<CustomerRoleMapping> CustomerRoleMappings { get; set; }
     }

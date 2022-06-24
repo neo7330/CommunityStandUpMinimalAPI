@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.VisualStudio.TestPlatform.TestHost;
 using Xunit;
+using Customers.Core;
 
 public class TodoTests
 {
@@ -73,9 +74,9 @@ class TodoApplication : WebApplicationFactory<Program>
 
         builder.ConfigureServices(services =>
         {
-            services.RemoveAll(typeof(DbContextOptions<TodoDbContext>));
+            services.RemoveAll(typeof(DbContextOptions<CustomerContext>));
 
-            services.AddDbContext<TodoDbContext>(options =>
+            services.AddDbContext<CustomerContext>(options =>
                 options.UseInMemoryDatabase("Testing", root));
         });
 

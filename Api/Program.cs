@@ -3,16 +3,21 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var connectionString = builder.Configuration.GetConnectionString("Todos") ?? "Data Source=Todos.db";
+var connectionString = builder.Configuration.GetConnectionString("ConnectionString") ?? builder.Configuration["ConnectionString"];
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSqlServer<CustomerContext>(connectionString);
+builder.Services.AddDbContextPool<CustomerContext>(o => o.UseSqlServer(connectionString));
+
+
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new() { Title = builder.Environment.ApplicationName, Version = "v1" });
 });
 
+
 var app = builder.Build();
+
+MigrateDatabase(app);
 
 if (app.Environment.IsDevelopment())
 {
@@ -77,3 +82,11 @@ app.MapDelete("/customers/{id}", async (CustomerContext db, int id) =>
 });
 
 app.Run();
+
+
+void MigrateDatabase(WebApplication app)
+{
+    using var serviceScope = app.Services.CreateScope();
+    var db = serviceScope.ServiceProvider.GetRequiredService<CustomerContext>();
+    db.Database.Migrate();
+}
